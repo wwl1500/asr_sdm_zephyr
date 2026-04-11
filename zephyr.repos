@@ -2,5 +2,6 @@ repositories:
   zephyr:
     type: git
     url: https://github.com/zephyrproject-rtos/zephyr.git
-    version: v4.4.0-rc1
+    # Development tip (main). Pin with e.g. v4.3.0 or pass --zephyr-ref to the installer.
+    version: main
     path: zephyr
