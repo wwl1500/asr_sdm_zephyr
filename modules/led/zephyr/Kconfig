@@ -7,3 +7,11 @@ config ASR_LED
 	help
 	  Library for driving a group of GPIO-connected LEDs described in devicetree
 	  (compatible: asr,gpio-led-group). Intended for boards such as Seeed XIAO RP2350.
+
+config ASR_PWM_LED_THREAD
+	bool "PWM LED blink background thread (pwm-leds)"
+	default n
+	depends on LED
+	depends on LED_PWM
+	help
+	  Spawns a thread that toggles brightness on the first pwm-leds LED (index 0).

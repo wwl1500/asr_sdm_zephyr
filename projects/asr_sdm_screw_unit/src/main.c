@@ -9,56 +9,19 @@
 
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
-#include <zephyr/drivers/led.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/uart.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 
+#if DT_HAS_COMPAT_STATUS_OKAY(pwm_leds)
+#include <asr/pwm_led.h>
+#endif
+
 LOG_MODULE_REGISTER(icm42688_demo, LOG_LEVEL_INF);
 
 /* SPI mode: use the ICM-42688 node from devicetree */
 #define ICM42688_NODE DT_NODELABEL(icm42688)
-
-/* Board PWM LED group (compatible: pwm-leds; child pwm_led0 — index 0) */
-#if DT_HAS_COMPAT_STATUS_OKAY(pwm_leds)
-#define PWM_LEDS_DEV DEVICE_DT_GET(DT_COMPAT_GET_ANY_STATUS_OKAY(pwm_leds))
-#define PWM_LED_INDEX 0U
-
-#define PWM_LED_THREAD_STACK_SIZE 1024U
-#define PWM_LED_THREAD_PRIO       8
-
-K_THREAD_STACK_DEFINE(pwm_led_stack, PWM_LED_THREAD_STACK_SIZE);
-static struct k_thread pwm_led_thread_data;
-
-static void pwm_led_thread(void *p1, void *p2, void *p3)
-{
-    ARG_UNUSED(p1);
-    ARG_UNUSED(p2);
-    ARG_UNUSED(p3);
-
-    if (!device_is_ready(PWM_LEDS_DEV))
-    {
-        LOG_ERR("PWM LED (pwm-leds) 未就绪");
-        return;
-    }
-
-    (void)led_off(PWM_LEDS_DEV, PWM_LED_INDEX);
-
-    for (;;)
-    {
-        static bool pwm_bright;
-        int r = led_set_brightness(PWM_LEDS_DEV, PWM_LED_INDEX, pwm_bright ? 0U : 60U);
-
-        if (r < 0)
-        {
-            LOG_ERR("PWM LED 设置失败: %d", r);
-        }
-        pwm_bright = !pwm_bright;
-        k_sleep(K_MSEC(500));
-    }
-}
-#endif
 
 #if !DT_NODE_EXISTS(ICM42688_NODE)
 #error "设备树中未找到 icm42688 节点，请检查 overlay 文件"
@@ -100,9 +63,7 @@ int main(void)
     k_sleep(K_MSEC(500));
 
 #if DT_HAS_COMPAT_STATUS_OKAY(pwm_leds)
-    k_thread_create(&pwm_led_thread_data, pwm_led_stack,
-                    K_THREAD_STACK_SIZEOF(pwm_led_stack), pwm_led_thread, NULL, NULL, NULL,
-                    PWM_LED_THREAD_PRIO, 0, K_NO_WAIT);
+    (void)asr_pwm_led_blink_start();
 #endif
 
     /* SPI mode: check that the sensor device is ready */
