@@ -60,8 +60,6 @@ int main(void)
     /* Short delay to stabilize the serial connection */
     k_sleep(K_MSEC(500));
 
-    (void)asr_led_thread_start();
-
     /* SPI mode: check that the sensor device is ready */
     if (!device_is_ready(icm))
     {
@@ -79,6 +77,8 @@ int main(void)
         LOG_INF("");
     }
 
+    (void)asr_led_thread_start();
+
     while (1)
     {
         const bool host_connected = usb_cdc_host_connected(usb_dev);
@@ -86,15 +86,8 @@ int main(void)
         if (host_connected != host_was_connected)
         {
             host_was_connected = host_connected;
-            if (!host_connected)
+            if (host_connected)
                 LOG_INF("USB 串口已连接。");
-            // {
-            // 	LOG_INF("USB 串口未连接 (关闭串口或断开)；等待重新连接…");
-            // }
-            // else
-            // {
-            // 	LOG_INF("USB 串口已连接。");
-            // }
         }
 
         if (!host_connected)
