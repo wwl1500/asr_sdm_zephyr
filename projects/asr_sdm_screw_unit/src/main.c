@@ -14,9 +14,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 
-#if DT_HAS_COMPAT_STATUS_OKAY(pwm_leds)
-#include <asr/pwm_led.h>
-#endif
+#include <asr/led_thread.h>
 
 LOG_MODULE_REGISTER(icm42688_demo, LOG_LEVEL_INF);
 
@@ -62,9 +60,7 @@ int main(void)
     /* Short delay to stabilize the serial connection */
     k_sleep(K_MSEC(500));
 
-#if DT_HAS_COMPAT_STATUS_OKAY(pwm_leds)
-    (void)asr_pwm_led_blink_start();
-#endif
+    (void)asr_led_thread_start();
 
     /* SPI mode: check that the sensor device is ready */
     if (!device_is_ready(icm))

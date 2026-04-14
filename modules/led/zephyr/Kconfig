@@ -1,17 +1,23 @@
 # SPDX-License-Identifier: Apache-2.0
 
-config ASR_LED
-	bool "ASR GPIO LED group library"
+config ASR_USR_LED
+	bool "ASR user LED driver (GPIO / PWM)"
 	default y
 	depends on GPIO
 	help
-	  Library for driving a group of GPIO-connected LEDs described in devicetree
-	  (compatible: asr,gpio-led-group). Intended for boards such as Seeed XIAO RP2350.
+	  Driver for the onboard user LED (GP25 on XIAO RP2350).
+	  Uses PWM brightness via pwm-leds when available, otherwise GPIO via gpio-leds.
 
-config ASR_PWM_LED_THREAD
-	bool "PWM LED blink background thread (pwm-leds)"
+config ASR_RGB_LED
+	bool "ASR WS2812 RGB LED driver"
 	default n
-	depends on LED
-	depends on LED_PWM
+	depends on LED_STRIP
 	help
-	  Spawns a thread that toggles brightness on the first pwm-leds LED (index 0).
+	  Driver for the onboard WS2812 NeoPixel RGB LED on XIAO RP2350 (GP22, PIO0).
+
+config ASR_LED_THREAD
+	bool "ASR LED background thread"
+	default n
+	depends on ASR_USR_LED && ASR_RGB_LED
+	help
+	  Background thread: user LED steady on, RGB LED blinks blue.
