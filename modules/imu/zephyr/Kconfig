@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config ASR_IMU
+	bool "ASR IMU driver"
+	default y
+	depends on SENSOR
+	help
+	  Driver helpers for the project's ICM-42688 sensor. Provides device
+	  readiness validation and single-sample reads.
+
+config ASR_IMU_THREAD
+	bool "IMU read/print background thread"
+	default n
+	depends on ASR_IMU && UART_LINE_CTRL
+	help
+	  Spawns a background IMU logging thread using the project's IMU and USB CDC
+	  ACM devicetree nodes. Thread timing is configured with the options below.
+
+config ASR_IMU_STARTUP_DELAY_MS
+	int "IMU thread startup delay in milliseconds"
+	default 500
+	depends on ASR_IMU_THREAD
+	help
+	  Delay before validating the IMU and USB CDC ACM devices and creating the
+	  IMU logging thread.
+
+config ASR_IMU_PERIOD_MS
+	int "IMU sampling period in milliseconds"
+	default 1000
+	depends on ASR_IMU_THREAD
+	help
+	  Delay between successful IMU fetch/log iterations.
+
+config ASR_IMU_DISCONNECTED_POLL_PERIOD_MS
+	int "IMU disconnected poll period in milliseconds"
+	default 200
+	depends on ASR_IMU_THREAD
+	help
+	  Delay between USB DTR connection checks while the host serial port is not
+	  connected.
