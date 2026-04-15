@@ -54,11 +54,11 @@ asr_sdm_zephyr/
 其中 `.venv/`、`zephyr_ws/` 和 `build/` 为本地安装或构建后生成的目录。
 
 ## Development and Compilation
-All commands is used under roo folder `asr_sdm_zephyr/`. 
+All commands are used under root folder `asr_sdm_zephyr/`. 
 ```sh
 # Everytime reopen terminal, we need to reload environment again:
-source /home/michael/Documents/code/asr_sdm_zephyr/.venv/bin/activate
-source /home/michael/Documents/code/asr_sdm_zephyr/zephyr_ws/env.sh
+source .venv/bin/activate
+source zephyr_ws/env.sh
 
 # Build command:
 west build -p always -b xiao_rp2350/rp2350a/m33 -s projects/asr_sdm_screw_unit -d build/asr_sdm_screw_unit
