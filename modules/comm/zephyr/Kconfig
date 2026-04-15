@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config ASR_COMM
+	bool "ASR UART communication module"
+	default n
+	depends on SERIAL && UART_INTERRUPT_DRIVEN
+	help
+	  UART0-based communication module implementing the ASR SDM protocol.
+	  Receives and sends 8-byte protocol messages with frame synchronization
+	  over a simple [0xAA 0x55 LEN DATA... CHECKSUM] framing layer.
+
+config ASR_COMM_THREAD_STACK_SIZE
+	int "Communication thread stack size"
+	default 1024
+	depends on ASR_COMM
+	help
+	  Stack size for the UART communication processing thread.
+
+config ASR_COMM_THREAD_PRIORITY
+	int "Communication thread priority"
+	default 5
+	depends on ASR_COMM
+	help
+	  Cooperative priority of the UART communication thread.  Lower numbers
+	  mean higher priority.
+
+config ASR_COMM_RX_QUEUE_DEPTH
+	int "RX message queue depth"
+	default 8
+	depends on ASR_COMM
+	help
+	  Maximum number of received frames that can be queued between the ISR
+	  and the processing thread before the oldest frame is silently dropped.

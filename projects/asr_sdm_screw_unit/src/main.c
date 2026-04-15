@@ -2,9 +2,11 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * ICM-42688 sensor demo application for Seeed XIAO RP2350 development board.
- * The application delegates LED and IMU activity to the ASR helper modules.
+ * The application delegates LED, IMU, and UART communication activity to the
+ * ASR helper modules.
  */
 
+#include <asr/comm_thread.h>
 #include <asr/imu_thread.h>
 #include <asr/led_thread.h>
 
@@ -29,6 +31,12 @@ int main(void)
 	ret = asr_imu_thread_start();
 	if (ret < 0) {
 		LOG_ERR("IMU 后台线程启动失败: %d", ret);
+		return ret;
+	}
+
+	ret = asr_comm_thread_start();
+	if (ret < 0) {
+		LOG_ERR("通信线程启动失败: %d", ret);
 		return ret;
 	}
 
