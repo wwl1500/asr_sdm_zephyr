@@ -18,6 +18,15 @@ LOG_MODULE_REGISTER(icm42688_demo, LOG_LEVEL_INF);
 unit_status_t unit_status;
 K_MUTEX_DEFINE(unit_status_mutex);
 
+static void handle_led_write(bool state)
+{
+	asr_led_thread_set_rgb_blink(state);
+}
+
+static const struct asr_comm_callbacks comm_callbacks = {
+	.on_led_write = handle_led_write,
+};
+
 int main(void)
 {
 	int ret;
@@ -37,6 +46,8 @@ int main(void)
 		LOG_ERR("IMU 后台线程启动失败: %d", ret);
 		return ret;
 	}
+
+	asr_comm_register_callbacks(&comm_callbacks);
 
 	ret = asr_comm_thread_start();
 	if (ret < 0) {

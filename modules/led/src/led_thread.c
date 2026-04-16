@@ -8,6 +8,7 @@
 
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/atomic.h>
 
 LOG_MODULE_REGISTER(asr_led_thread, LOG_LEVEL_INF);
 
@@ -18,6 +19,13 @@ LOG_MODULE_REGISTER(asr_led_thread, LOG_LEVEL_INF);
 
 K_THREAD_STACK_DEFINE(led_thread_stack, LED_THREAD_STACK_SIZE);
 static struct k_thread led_thread_data;
+
+static atomic_t rgb_blink_enabled = ATOMIC_INIT(1);
+
+void asr_led_thread_set_rgb_blink(bool enable)
+{
+	atomic_set(&rgb_blink_enabled, enable ? 1 : 0);
+}
 
 static void led_thread_entry(void *p1, void *p2, void *p3)
 {
@@ -41,8 +49,14 @@ static void led_thread_entry(void *p1, void *p2, void *p3)
 	bool rgb_on = false;
 
 	for (;;) {
-		rgb_on = !rgb_on;
-		(void)asr_rgb_led_set(0, 0, rgb_on ? RGB_BLUE_BRIGHTNESS : 0);
+		if (atomic_get(&rgb_blink_enabled)) {
+			rgb_on = !rgb_on;
+			(void)asr_rgb_led_set(0, 0,
+					      rgb_on ? RGB_BLUE_BRIGHTNESS : 0);
+		} else if (rgb_on) {
+			rgb_on = false;
+			(void)asr_rgb_led_off();
+		}
 		k_sleep(K_MSEC(RGB_BLINK_MS));
 	}
 }
