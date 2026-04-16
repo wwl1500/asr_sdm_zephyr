@@ -41,6 +41,7 @@ extern "C" {
 #define ASR_COMM_PARAM_JOINT2        0x07
 #define ASR_COMM_PARAM_JOINT1_TORQUE 0x08
 #define ASR_COMM_PARAM_JOINT2_TORQUE 0x09
+#define ASR_COMM_PARAM_IMU          0x0A
 
 /* Dynamixel identifiers (0-based) */
 #define ASR_DXL_1 0
@@ -55,6 +56,12 @@ struct asr_comm_callbacks {
 	void (*on_led_write)(bool state);
 	void (*on_motor_set)(uint8_t channel, uint8_t value);
 	void (*on_dynamixel_torque)(uint8_t id, bool enable);
+	/**
+	 * Read IMU data into a response buffer.
+	 * @param buf  Output buffer of exactly @ref ASR_COMM_MSG_SIZE bytes.
+	 * @return 0 on success, negative errno on failure.
+	 */
+	int (*on_imu_read)(uint8_t buf[ASR_COMM_MSG_SIZE]);
 };
 
 /**

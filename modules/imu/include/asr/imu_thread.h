@@ -7,6 +7,8 @@
 #ifndef ASR_IMU_THREAD_H_
 #define ASR_IMU_THREAD_H_
 
+#include <asr/imu.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -18,6 +20,14 @@ extern "C" {
  *         errno on failure.
  */
 int asr_imu_thread_start(void);
+
+/**
+ * Get the latest IMU sample cached by the background thread.
+ *
+ * @param sample  Output storage; must not be NULL.
+ * @return 0 on success, -ENODATA if no sample has been captured yet.
+ */
+int asr_imu_thread_get_latest(struct asr_imu_sample *sample);
 
 #ifdef __cplusplus
 }

@@ -34,6 +34,23 @@ K_THREAD_STACK_DEFINE(imu_thread_stack, IMU_THREAD_STACK_SIZE);
 static struct k_thread imu_thread_data;
 static bool imu_thread_started;
 
+static struct asr_imu_sample cached_sample;
+static bool cached_sample_valid;
+static K_MUTEX_DEFINE(cached_sample_mutex);
+
+int asr_imu_thread_get_latest(struct asr_imu_sample *sample)
+{
+	int ret = -ENODATA;
+
+	k_mutex_lock(&cached_sample_mutex, K_FOREVER);
+	if (cached_sample_valid) {
+		*sample = cached_sample;
+		ret = 0;
+	}
+	k_mutex_unlock(&cached_sample_mutex);
+	return ret;
+}
+
 static bool usb_cdc_host_connected(const struct device *cdc_acm)
 {
 	uint32_t dtr = 0U;
@@ -82,6 +99,11 @@ static void imu_thread_entry(void *p1, void *p2, void *p3)
 			k_sleep(K_MSEC(IMU_THREAD_PERIOD_MS));
 			continue;
 		}
+
+		k_mutex_lock(&cached_sample_mutex, K_FOREVER);
+		cached_sample = sample;
+		cached_sample_valid = true;
+		k_mutex_unlock(&cached_sample_mutex);
 
 		LOG_INF("加速度 [m/s²]: X=%10.4f  Y=%10.4f  Z=%10.4f",
 			sensor_value_to_double(&sample.accel[0]),

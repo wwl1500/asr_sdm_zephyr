@@ -59,6 +59,15 @@ bool protocol_update(const uint8_t msg[ASR_COMM_MSG_SIZE])
 		case ASR_COMM_PARAM_JOINT1_TORQUE:
 		case ASR_COMM_PARAM_JOINT2_TORQUE:
 			break;
+		case ASR_COMM_PARAM_IMU: {
+			uint8_t reply[ASR_COMM_MSG_SIZE] = {0};
+
+			if (hw_cb && hw_cb->on_imu_read &&
+			    hw_cb->on_imu_read(reply) == 0) {
+				asr_comm_send(reply);
+			}
+			break;
+		}
 		default:
 			break;
 		}
