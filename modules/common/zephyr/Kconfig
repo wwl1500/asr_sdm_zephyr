@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config ASR_COMMON
+	bool "ASR common types and utilities"
+	default y
+	help
+	  Shared headers (robot_base.h, sin_table.h) used across ASR modules.

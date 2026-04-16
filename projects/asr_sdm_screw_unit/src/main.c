@@ -9,10 +9,14 @@
 #include <asr/comm_thread.h>
 #include <asr/imu_thread.h>
 #include <asr/led_thread.h>
+#include <asr/robot_base.h>
 
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(icm42688_demo, LOG_LEVEL_INF);
+
+unit_status_t unit_status;
+K_MUTEX_DEFINE(unit_status_mutex);
 
 int main(void)
 {

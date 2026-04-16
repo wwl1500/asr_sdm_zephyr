@@ -43,6 +43,11 @@
 	status = "okay";
 };
 
+&uart0 {
+	current-speed = <115200>;
+	status = "okay";
+};
+
 &xiao_spi {
 	status = "okay";
 	cs-gpios = <&xiao_d 3 GPIO_ACTIVE_LOW>;  /* D3 = GP5 */
