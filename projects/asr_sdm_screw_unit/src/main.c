@@ -65,22 +65,19 @@ int main(void)
     ret = asr_led_thread_start();
     if (ret < 0)
     {
-        LOG_ERR("LED thread start failed: %d", ret);
-        return ret;
+        LOG_WRN("LED thread start failed: %d (continuing without LED)", ret);
     }
 
     ret = asr_usb_protocol_thread_start();
     if (ret < 0)
     {
-        LOG_ERR("USB protocol thread start failed: %d", ret);
-        return ret;
+        LOG_WRN("USB protocol thread start failed: %d (continuing without USB)", ret);
     }
 
     ret = asr_cpu_monitor_thread_start();
     if (ret < 0)
     {
-        LOG_ERR("CPU monitor thread start failed: %d", ret);
-        return ret;
+        LOG_WRN("CPU monitor thread start failed: %d (continuing without CPU monitor)", ret);
     }
 
     asr_comm_register_callbacks(&comm_callbacks);
@@ -88,15 +85,13 @@ int main(void)
     ret = asr_comm_thread_start();
     if (ret < 0)
     {
-        LOG_ERR("comm thread start failed: %d", ret);
-        return ret;
+        LOG_WRN("comm thread start failed: %d (continuing without comm)", ret);
     }
 
     ret = asr_imu_thread_start();
     if (ret < 0)
     {
-        LOG_ERR("IMU thread start failed: %d", ret);
-        return ret;
+        LOG_WRN("IMU thread start failed: %d (continuing without IMU)", ret);
     }
 
     LOG_INF("all background threads started");
