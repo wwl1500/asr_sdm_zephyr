@@ -21,3 +21,10 @@ config ASR_LED_THREAD
 	depends on ASR_USR_LED && ASR_RGB_LED
 	help
 	  Background thread: user LED steady on, RGB LED blinks blue.
+
+config ASR_LED_THREAD_PERIOD_MS
+	int "LED thread period in milliseconds"
+	default 500
+	depends on ASR_LED_THREAD
+	help
+	  Delay between LED thread iterations (controls RGB blink rate).

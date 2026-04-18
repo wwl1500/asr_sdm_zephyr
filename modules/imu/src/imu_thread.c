@@ -3,8 +3,9 @@
  *
  * IMU background thread.
  *
- * Periodically calls asr_imu_update() (in imu.c) which fetches sensor data,
- * caches the sample, and writes float values to unit_status.
+ * A periodic timer gives a semaphore every IMU_THREAD_PERIOD_MS.  The thread
+ * blocks on the semaphore and calls asr_imu_update() (in imu.c) which fetches
+ * sensor data, caches the sample, and writes float values to unit_status.
  */
 
 #include <asr/imu.h>
@@ -28,17 +29,31 @@ static K_THREAD_STACK_DEFINE(imu_thread_stack, IMU_THREAD_STACK_SIZE);
 static struct k_thread imu_thread_data;
 static bool imu_thread_started;
 
+static K_SEM_DEFINE(imu_tick_sem, 0, 1);
+static struct k_timer imu_timer;
+
+static void imu_timer_expiry(struct k_timer *timer)
+{
+	ARG_UNUSED(timer);
+	k_sem_give(&imu_tick_sem);
+}
+
 static void imu_thread_entry(void *p1, void *p2, void *p3)
 {
 	ARG_UNUSED(p1);
 	ARG_UNUSED(p2);
 	ARG_UNUSED(p3);
 
+	k_timer_init(&imu_timer, imu_timer_expiry, NULL);
+	k_timer_start(&imu_timer, K_MSEC(IMU_THREAD_PERIOD_MS),
+		       K_MSEC(IMU_THREAD_PERIOD_MS));
+
 	for (;;) {
+		k_sem_take(&imu_tick_sem, K_FOREVER);
+
 		if (asr_imu_update() < 0) {
 			LOG_ERR("IMU read failed");
 		}
-		k_sleep(K_MSEC(IMU_THREAD_PERIOD_MS));
 	}
 }
 

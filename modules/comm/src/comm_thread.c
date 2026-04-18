@@ -18,6 +18,7 @@ LOG_MODULE_DECLARE(asr_comm, LOG_LEVEL_INF);
 
 /* Provided by protocol.c */
 extern struct k_msgq rx_msgq;
+extern struct k_sem rx_frame_sem;
 extern int asr_comm_uart_init(void);
 extern bool protocol_init(void);
 extern bool protocol_update(const uint8_t msg[ASR_COMM_MSG_SIZE]);
@@ -35,7 +36,9 @@ static void comm_thread_entry(void *p1, void *p2, void *p3)
 	ARG_UNUSED(p3);
 
 	for (;;) {
-		if (k_msgq_get(&rx_msgq, msg, K_FOREVER) == 0) {
+		k_sem_take(&rx_frame_sem, K_FOREVER);
+
+		if (k_msgq_get(&rx_msgq, msg, K_NO_WAIT) == 0) {
 			if (protocol_update(msg)) {
 				LOG_DBG("processed cmd=0x%02x param=0x%02x",
 					msg[2], msg[3]);
