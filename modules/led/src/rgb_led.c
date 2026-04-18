@@ -27,7 +27,12 @@ int asr_rgb_led_init(void)
 	}
 
 	memset(pixels, 0, sizeof(pixels));
-	return led_strip_update_rgb(strip_dev, pixels, STRIP_NUM_LEDS);
+	int ret = led_strip_update_rgb(strip_dev, pixels, STRIP_NUM_LEDS);
+
+	if (ret == 0) {
+		LOG_INF("RGB LED initialised");
+	}
+	return ret;
 }
 
 int asr_rgb_led_set(uint8_t r, uint8_t g, uint8_t b)

@@ -59,6 +59,7 @@ int asr_usr_led_init(void)
 	}
 #endif
 	usr_led_state = false;
+	LOG_INF("User LED initialised");
 	return 0;
 }
 

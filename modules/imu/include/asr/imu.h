@@ -32,6 +32,19 @@ int asr_imu_init(void);
  */
 int asr_imu_read(struct asr_imu_sample *sample);
 
+/**
+ * Fetch a sample, cache it, and write float data to unit_status.
+ * @return 0 on success, negative errno on failure.
+ */
+int asr_imu_update(void);
+
+/**
+ * Get the latest cached IMU sample.
+ * @param sample  Output storage; must not be NULL.
+ * @return 0 on success, -ENODATA if no sample has been captured yet.
+ */
+int asr_imu_get_latest(struct asr_imu_sample *sample);
+
 #ifdef __cplusplus
 }
 #endif

@@ -88,13 +88,6 @@ typedef struct {
 void asr_comm_register_callbacks(const struct asr_comm_callbacks *cb);
 
 /**
- * Initialise the UART device and protocol state.
- *
- * @return 0 on success, negative errno on failure.
- */
-int asr_comm_init(void);
-
-/**
  * Start the UART communication background thread.
  *
  * @return 0 on success, -EALREADY if already started, negative errno otherwise.

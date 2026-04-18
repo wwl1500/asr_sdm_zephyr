@@ -9,38 +9,45 @@
 #define BUF_SIZE 64
 #endif
 
-typedef union {
+typedef union
+{
     int16_t data;
 
-    struct {
+    struct
+    {
         uint8_t lsb;
         uint8_t msb;
     } element;
 } data16_t;
 
-typedef union {
+typedef union
+{
     float f;
     int32_t i;
 } union32_t;
 
-typedef struct {
+typedef struct
+{
     float alpha;
     float state[3];
 } imu_filter_t;
 
-typedef struct {
+typedef struct
+{
     data16_t gyro[3];
     data16_t accel[3];
     uint8_t temperature;
 } sensor_imu_t;
 
-typedef struct {
+typedef struct
+{
     float gyro[3];
     float accel[3];
     float temperature;
 } sensor_imu_float_t;
 
-typedef struct {
+typedef struct
+{
     uint32_t unit_id;
     uint8_t msg_can_tx[BUF_SIZE];
     uint8_t msg_can_rx[BUF_SIZE];
@@ -48,7 +55,7 @@ typedef struct {
     uint8_t tail;
     uint8_t flashData[8];
     sensor_imu_t imu_raw_data;
-    sensor_imu_float_t imu_filtered_data;
+    sensor_imu_float_t imu_float_data;
     imu_filter_t imu_filter;
     uint8_t cmd_motor[2];
     uint8_t cmd_joint1[4];
