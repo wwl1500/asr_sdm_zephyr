@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: Apache-2.0
+
+config ASR_CPU_MONITOR
+	bool "ASR CPU monitor"
+	default n
+	depends on THREAD_RUNTIME_STATS
+	help
+	  Periodically logs per-thread CPU usage statistics.
+
+config ASR_CPU_MONITOR_THREAD_STACK_SIZE
+	int "CPU monitor thread stack size"
+	default 1024
+	depends on ASR_CPU_MONITOR
+	help
+	  Stack size for the CPU monitor background thread.
+
+config ASR_CPU_MONITOR_THREAD_PRIORITY
+	int "CPU monitor thread priority"
+	default 10
+	depends on ASR_CPU_MONITOR
+	help
+	  Cooperative priority for the CPU monitor thread.
+
+config ASR_CPU_MONITOR_PERIOD_MS
+	int "CPU monitor report interval in milliseconds"
+	default 5000
+	depends on ASR_CPU_MONITOR
+	help
+	  How often the CPU monitor samples and logs thread usage.

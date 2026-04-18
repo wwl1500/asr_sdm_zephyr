@@ -7,6 +7,7 @@
  */
 
 #include <asr/comm_thread.h>
+#include <asr/cpu_monitor_thread.h>
 #include <asr/imu.h>
 #include <asr/imu_thread.h>
 #include <asr/led_thread.h>
@@ -68,10 +69,17 @@ int main(void)
         return ret;
     }
 
-    ret = asr_imu_thread_start();
+    ret = asr_usb_protocol_thread_start();
     if (ret < 0)
     {
-        LOG_ERR("IMU thread start failed: %d", ret);
+        LOG_ERR("USB protocol thread start failed: %d", ret);
+        return ret;
+    }
+
+    ret = asr_cpu_monitor_thread_start();
+    if (ret < 0)
+    {
+        LOG_ERR("CPU monitor thread start failed: %d", ret);
         return ret;
     }
 
@@ -84,10 +92,10 @@ int main(void)
         return ret;
     }
 
-    ret = asr_usb_protocol_thread_start();
+    ret = asr_imu_thread_start();
     if (ret < 0)
     {
-        LOG_ERR("USB protocol thread start failed: %d", ret);
+        LOG_ERR("IMU thread start failed: %d", ret);
         return ret;
     }
 
