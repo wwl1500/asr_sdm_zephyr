@@ -12,9 +12,16 @@ extern "C" {
 #endif
 
 /**
- * @brief Start the CPU monitor background thread.
+ * @brief Create the CPU monitor thread in suspended state.
  *
- * @return 0 on success, negative errno on failure.
+ * @return 0 on success, -EALREADY if already initialised.
+ */
+int asr_cpu_monitor_thread_init(void);
+
+/**
+ * @brief Start the CPU monitor thread (k_thread_start; must call init first).
+ *
+ * @return 0 on success, -EINVAL if not initialised.
  */
 int asr_cpu_monitor_thread_start(void);
 

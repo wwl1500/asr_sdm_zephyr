@@ -15,11 +15,16 @@ extern "C"
 #endif
 
     /**
-     * Start the LED control thread.
-     * - User LED: held on (steady).
-     * - RGB LED:  blinks blue (500 ms on / 500 ms off) when enabled.
+     * Initialise and create the LED thread in suspended state.
      *
      * @return 0 on success, negative errno on failure.
+     */
+    int asr_led_thread_init(void);
+
+    /**
+     * Start the LED thread (k_thread_start; must call asr_led_thread_init first).
+     *
+     * @return 0 on success.
      */
     int asr_led_thread_start(void);
 

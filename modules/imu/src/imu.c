@@ -59,11 +59,6 @@ int asr_imu_read(struct asr_imu_sample *sample)
 		return -EINVAL;
 	}
 
-	ret = asr_imu_init();
-	if (ret < 0) {
-		return ret;
-	}
-
 	ret = sensor_sample_fetch(IMU_DEV);
 	if (ret < 0) {
 		return ret;

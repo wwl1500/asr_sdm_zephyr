@@ -1,3 +1,3 @@
-mainmenu "ICM42688 demo application"
+mainmenu "unit system application"
 
 source "Kconfig.zephyr"

@@ -88,9 +88,17 @@ typedef struct {
 void asr_comm_register_callbacks(const struct asr_comm_callbacks *cb);
 
 /**
- * Start the UART communication background thread.
+ * Initialise UART and create the comm thread in suspended state.
  *
- * @return 0 on success, -EALREADY if already started, negative errno otherwise.
+ * @return 0 on success, -EALREADY if already initialised, negative errno
+ *         otherwise.
+ */
+int asr_comm_thread_init(void);
+
+/**
+ * Start the comm thread (k_thread_start; must call asr_comm_thread_init first).
+ *
+ * @return 0 on success, -EINVAL if not initialised.
  */
 int asr_comm_thread_start(void);
 

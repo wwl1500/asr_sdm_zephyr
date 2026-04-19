@@ -20,6 +20,8 @@
 &zephyr_udc0 {
 	cdc_acm_uart0: cdc_acm_uart0 {
 		compatible = "zephyr,cdc-acm-uart";
+		/* Default Zephyr CDC ACM UART TX FIFO is 1024 bytes. */
+		tx-fifo-size = <2048>;
 	};
 };
 

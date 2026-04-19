@@ -12,10 +12,17 @@ extern "C" {
 #endif
 
 /**
- * Initialise the USB protocol and start the RX processing thread.
+ * Initialise the USB protocol and create the RX thread in suspended state.
  *
- * @return 0 on success, -EALREADY when already started, or another negative
- *         errno on failure.
+ * @return 0 on success, -EALREADY when already initialised, or another
+ *         negative errno on failure.
+ */
+int asr_usb_protocol_thread_init(void);
+
+/**
+ * Start the USB protocol RX thread (k_thread_start; must call init first).
+ *
+ * @return 0 on success, -EINVAL if not initialised.
  */
 int asr_usb_protocol_thread_start(void);
 

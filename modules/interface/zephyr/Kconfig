@@ -11,21 +11,21 @@ config ASR_USB_INTERFACE
 
 config ASR_USB_INTERFACE_THREAD_STACK_SIZE
 	int "USB interface thread stack size"
-	default 1024
+	default 2048
 	depends on ASR_USB_INTERFACE
 	help
 	  Stack size for the USB interface RX processing thread.
 
 config ASR_USB_INTERFACE_THREAD_PRIORITY
 	int "USB interface thread priority"
-	default 6
+	default 1
 	depends on ASR_USB_INTERFACE
 	help
 	  Priority of the USB interface RX processing thread.
 
 config ASR_USB_INTERFACE_RX_BUF_SIZE
 	int "USB interface RX buffer size"
-	default 64
+	default 256
 	depends on ASR_USB_INTERFACE
 	help
 	  Maximum number of bytes per received chunk delivered to the RX

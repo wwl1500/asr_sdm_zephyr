@@ -29,48 +29,59 @@ static bool comm_started;
 
 static void comm_thread_entry(void *p1, void *p2, void *p3)
 {
-	uint8_t msg[ASR_COMM_MSG_SIZE];
+    uint8_t msg[ASR_COMM_MSG_SIZE];
 
-	ARG_UNUSED(p1);
-	ARG_UNUSED(p2);
-	ARG_UNUSED(p3);
+    ARG_UNUSED(p1);
+    ARG_UNUSED(p2);
+    ARG_UNUSED(p3);
 
-	for (;;) {
-		k_sem_take(&rx_frame_sem, K_FOREVER);
+    protocol_init();
 
-		if (k_msgq_get(&rx_msgq, msg, K_NO_WAIT) == 0) {
-			if (protocol_update(msg)) {
-				LOG_DBG("processed cmd=0x%02x param=0x%02x",
-					msg[2], msg[3]);
-			}
-		}
-	}
+    if (asr_comm_uart_init() < 0)
+    {
+        LOG_ERR("UART0 init failed, comm thread exiting");
+        return;
+    }
+
+    for (;;)
+    {
+        k_sem_take(&rx_frame_sem, K_FOREVER);
+
+        if (k_msgq_get(&rx_msgq, msg, K_NO_WAIT) == 0)
+        {
+            if (protocol_update(msg))
+            {
+                LOG_DBG("processed cmd=0x%02x param=0x%02x", msg[2], msg[3]);
+            }
+        }
+    }
+}
+
+int asr_comm_thread_init(void)
+{
+    if (comm_started)
+    {
+        LOG_WRN("communication thread already initialised");
+        return -EALREADY;
+    }
+
+    k_thread_create(&comm_thread_data, comm_stack, K_THREAD_STACK_SIZEOF(comm_stack), comm_thread_entry, NULL, NULL,
+                    NULL, CONFIG_ASR_COMM_THREAD_PRIORITY, 0, K_FOREVER);
+    k_thread_name_set(&comm_thread_data, "comm_thread");
+    comm_started = true;
+
+    LOG_INF("communication thread initialised (suspended), prio %d", k_thread_priority_get(&comm_thread_data));
+    return 0;
 }
 
 int asr_comm_thread_start(void)
 {
-	int ret;
-
-	if (comm_started) {
-		LOG_WRN("communication thread already running");
-		return -EALREADY;
-	}
-
-	protocol_init();
-
-	ret = asr_comm_uart_init();
-	if (ret < 0) {
-		return ret;
-	}
-
-	k_thread_create(&comm_thread_data, comm_stack,
-			K_THREAD_STACK_SIZEOF(comm_stack),
-			comm_thread_entry, NULL, NULL, NULL,
-			CONFIG_ASR_COMM_THREAD_PRIORITY, 0, K_NO_WAIT);
-	k_thread_name_set(&comm_thread_data, "comm_thread");
-	comm_started = true;
-
-	LOG_INF("communication thread started (prio %d)",
-		CONFIG_ASR_COMM_THREAD_PRIORITY);
-	return 0;
+    if (!comm_started)
+    {
+        LOG_ERR("communication thread not initialised");
+        return -EINVAL;
+    }
+    LOG_INF("communication thread started");
+    k_thread_start(&comm_thread_data);
+    return 0;
 }

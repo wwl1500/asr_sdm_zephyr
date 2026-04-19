@@ -1,7 +1,6 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * ICM-42688 sensor demo application for Seeed XIAO RP2350 development board.
  * The application delegates LED, IMU, and UART communication activity to the
  * ASR helper modules.
  */
@@ -14,9 +13,10 @@
 #include <asr/robot_base.h>
 #include <asr/usb_thread.h>
 
+#include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 
-LOG_MODULE_REGISTER(icm42688_demo, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(unit_system, LOG_LEVEL_INF);
 
 unit_status_t unit_status;
 K_MUTEX_DEFINE(unit_status_mutex);
@@ -59,40 +59,52 @@ int main(void)
     int ret;
 
     LOG_INF("==========================================");
-    LOG_INF("ICM-42688 sensor demo application");
+    LOG_INF("Unit system application");
     LOG_INF("==========================================");
 
-    ret = asr_led_thread_start();
+    /* ---- Phase 1: initialise all modules (threads created suspended) ---- */
+
+    ret = asr_led_thread_init();
     if (ret < 0)
     {
-        LOG_WRN("LED thread start failed: %d (continuing without LED)", ret);
+        LOG_WRN("LED thread init failed: %d (continuing without LED)", ret);
     }
 
-    ret = asr_usb_protocol_thread_start();
+    ret = asr_usb_protocol_thread_init();
     if (ret < 0)
     {
-        LOG_WRN("USB protocol thread start failed: %d (continuing without USB)", ret);
+        LOG_WRN("USB protocol thread init failed: %d (continuing without USB)", ret);
     }
 
-    ret = asr_cpu_monitor_thread_start();
+    ret = asr_cpu_monitor_thread_init();
     if (ret < 0)
     {
-        LOG_WRN("CPU monitor thread start failed: %d (continuing without CPU monitor)", ret);
+        LOG_WRN("CPU monitor thread init failed: %d (continuing without CPU monitor)", ret);
     }
 
     asr_comm_register_callbacks(&comm_callbacks);
 
-    ret = asr_comm_thread_start();
+    ret = asr_comm_thread_init();
     if (ret < 0)
     {
-        LOG_WRN("comm thread start failed: %d (continuing without comm)", ret);
+        LOG_WRN("comm thread init failed: %d (continuing without comm)", ret);
     }
 
-    ret = asr_imu_thread_start();
+    ret = asr_imu_thread_init();
     if (ret < 0)
     {
-        LOG_WRN("IMU thread start failed: %d (continuing without IMU)", ret);
+        LOG_WRN("IMU thread init failed: %d (continuing without IMU)", ret);
     }
+
+    /* ---- Phase 2: resume all threads together ---- */
+    LOG_INF("all modules initialised, starting threads");
+    k_sleep(K_MSEC(10));
+
+    asr_led_thread_start();
+    asr_usb_protocol_thread_start();
+    asr_cpu_monitor_thread_start();
+    asr_comm_thread_start();
+    asr_imu_thread_start();
 
     LOG_INF("all background threads started");
     return 0;
