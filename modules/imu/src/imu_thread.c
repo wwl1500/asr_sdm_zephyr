@@ -50,12 +50,8 @@ static void imu_thread_entry(void *p1, void *p2, void *p3)
     }
 
     int ret = asr_imu_init();
-
     if (ret < 0)
-    {
-        LOG_ERR("IMU device not ready, thread exiting");
         return;
-    }
 
     LOG_INF("IMU device ready, period: %u ms", IMU_THREAD_PERIOD_MS);
 
@@ -75,11 +71,11 @@ static void imu_thread_entry(void *p1, void *p2, void *p3)
 
 int asr_imu_thread_init(void)
 {
-    if (imu_thread_started)
-    {
-        LOG_WRN("IMU thread already initialised");
-        return -EALREADY;
-    }
+    // if (imu_thread_started)
+    // {
+    //     LOG_WRN("IMU thread already initialised");
+    //     return -EALREADY;
+    // }
 
     k_thread_create(&imu_thread_data, imu_thread_stack, K_THREAD_STACK_SIZEOF(imu_thread_stack), imu_thread_entry, NULL,
                     NULL, NULL, IMU_THREAD_PRIO, 0, K_FOREVER);
