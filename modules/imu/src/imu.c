@@ -15,6 +15,9 @@
 LOG_MODULE_REGISTER(asr_imu, LOG_LEVEL_INF);
 
 #define IMU_SENSOR_NODE DT_NODELABEL(icm42688)
+#define ASR_IMU_LOG_INTERVAL_MS 1000
+
+static int64_t last_log_ms;
 
 /* --- cached sample ------------------------------------------------------- */
 
@@ -106,12 +109,18 @@ int asr_imu_update(void)
     unit_status.imu_float_data.temperature = sensor_value_to_float(&sample.temp);
     k_mutex_unlock(&unit_status_mutex);
 
-    LOG_INF("accel [m/s2]: X=%10.4f  Y=%10.4f  Z=%10.4f", (double)unit_status.imu_float_data.accel[0],
-            (double)unit_status.imu_float_data.accel[1], (double)unit_status.imu_float_data.accel[2]);
-    LOG_INF("gyro [rad/s]: X=%10.4f  Y=%10.4f  Z=%10.4f", (double)unit_status.imu_float_data.gyro[0],
-            (double)unit_status.imu_float_data.gyro[1], (double)unit_status.imu_float_data.gyro[2]);
-    LOG_INF("die temp: %.1f C", (double)unit_status.imu_float_data.temperature);
-    LOG_INF("------------------------------------------");
+    int64_t now_ms = k_uptime_get();
+
+    if ((now_ms - last_log_ms) >= ASR_IMU_LOG_INTERVAL_MS)
+    {
+        last_log_ms = now_ms;
+        LOG_INF("accel [m/s2]: X=%10.4f  Y=%10.4f  Z=%10.4f", (double)unit_status.imu_float_data.accel[0],
+                (double)unit_status.imu_float_data.accel[1], (double)unit_status.imu_float_data.accel[2]);
+        LOG_INF("gyro [rad/s]: X=%10.4f  Y=%10.4f  Z=%10.4f", (double)unit_status.imu_float_data.gyro[0],
+                (double)unit_status.imu_float_data.gyro[1], (double)unit_status.imu_float_data.gyro[2]);
+        LOG_INF("die temp: %.1f C", (double)unit_status.imu_float_data.temperature);
+        LOG_INF("------------------------------------------");
+    }
 
     return 0;
 }

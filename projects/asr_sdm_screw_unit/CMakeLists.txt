@@ -5,6 +5,7 @@ list(APPEND ZEPHYR_EXTRA_MODULES
 	${CMAKE_CURRENT_SOURCE_DIR}/../../modules/common
 	${CMAKE_CURRENT_SOURCE_DIR}/../../modules/led
 	${CMAKE_CURRENT_SOURCE_DIR}/../../modules/imu
+	${CMAKE_CURRENT_SOURCE_DIR}/../../modules/ahrs
 	${CMAKE_CURRENT_SOURCE_DIR}/../../modules/comm
 	${CMAKE_CURRENT_SOURCE_DIR}/../../modules/interface
 	${CMAKE_CURRENT_SOURCE_DIR}/../../modules/monitor

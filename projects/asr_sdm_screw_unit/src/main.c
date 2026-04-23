@@ -5,6 +5,7 @@
  * ASR helper modules.
  */
 
+#include <asr/ahrs_thread.h>
 #include <asr/comm_thread.h>
 #include <asr/cpu_monitor_thread.h>
 #include <asr/imu.h>
@@ -96,6 +97,12 @@ int main(void)
         LOG_WRN("IMU thread init failed: %d (continuing without IMU)", ret);
     }
 
+    ret = asr_ahrs_thread_init();
+    if (ret < 0)
+    {
+        LOG_WRN("AHRS thread init failed: %d (continuing without AHRS)", ret);
+    }
+
     /* ---- Phase 2: resume all threads together ---- */
     LOG_INF("all modules initialised, starting threads");
     k_sleep(K_MSEC(10));
@@ -105,6 +112,7 @@ int main(void)
     asr_cpu_monitor_thread_start();
     asr_comm_thread_start();
     asr_imu_thread_start();
+    asr_ahrs_thread_start();
 
     LOG_INF("all background threads started");
     return 0;
