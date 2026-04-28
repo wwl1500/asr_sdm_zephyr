@@ -1,0 +1,10 @@
+tests:
+  drivers.dynamixel_packet:
+    build_only: true
+    integration_platforms:
+      - qemu_cortex_m3
+    platform_allow:
+      - qemu_cortex_m3
+    tags:
+      - drivers
+      - unit

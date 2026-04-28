@@ -45,7 +45,20 @@
 };
 
 &uart0 {
-	current-speed = <115200>;
+	current-speed = <57600>;
+	status = "okay";
+
+	dynamixel0: dynamixel0 {
+		compatible = "asr,dynamixel-rs485";
+		status = "okay";
+		dir-gpios = <&xiao_d 2 GPIO_ACTIVE_HIGH>; /* D2 = GP28 */
+		servo-id = <1>;
+		reply-timeout-us = <20000>;
+		turnaround-delay-us = <2000>;
+	};
+};
+
+&uart1 {
 	status = "okay";
 };
 
